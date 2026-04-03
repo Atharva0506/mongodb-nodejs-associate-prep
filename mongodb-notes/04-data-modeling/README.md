@@ -1,5 +1,7 @@
 # Section 4: Data Modeling (4%)
 
+[Home](../../README.md) | [Notes Index](../README.md) | [Previous: Section 3](../03-indexes/README.md) | [Next: Section 5](../05-tools-and-tooling/README.md)
+
 Official references:
 - https://www.mongodb.com/docs/manual/data-modeling/
 
@@ -96,3 +98,5 @@ Which model often increases read complexity unnecessarily?
 - C. Keeping `_id` unique
 - D. Using findOne for key lookups
 Answer: B
+
+[Previous: Section 3](../03-indexes/README.md) | [Back to Notes Index](../README.md) | [Next: Section 5](../05-tools-and-tooling/README.md)

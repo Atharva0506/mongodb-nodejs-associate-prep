@@ -1,5 +1,7 @@
 # MongoDB Associate Developer Exam Syllabus (Official PDF Aligned)
 
+[Home](../README.md) | [Notes Index](README.md)
+
 Source used for alignment in this repo:
 - `MongodDBAssociateDeveloperExamGuide.docx3.pdf`
 
@@ -15,6 +17,14 @@ Source used for alignment in this repo:
 - Section 4: Data Modeling: 4%
 - Section 5: Tools and Tooling: 2%
 - Section 6: Drivers: 18%
+
+## Jump to Sections
+- [Section 1: Overview and Document Model](01-overview-document-model/README.md)
+- [Section 2: CRUD](02-crud/README.md)
+- [Section 3: Indexes](03-indexes/README.md)
+- [Section 4: Data Modeling](04-data-modeling/README.md)
+- [Section 5: Tools and Tooling](05-tools-and-tooling/README.md)
+- [Section 6: Drivers - Node.js](06-drivers-nodejs/README.md)
 
 ## Objectives Map
 

@@ -1,5 +1,7 @@
 # Section 1: MongoDB Overview and the Document Model (8%)
 
+[Home](../../README.md) | [Notes Index](../README.md) | [Next: Section 2](../02-crud/README.md)
+
 Official references:
 - https://www.mongodb.com/docs/manual/core/document/
 - https://www.mongodb.com/docs/manual/reference/bson-types/
@@ -107,3 +109,5 @@ Two documents have different fields but unique `_id`. Can both be inserted?
 - C. No, unless validation is disabled globally.
 - D. Only in Atlas, not in self-managed MongoDB.
 Answer: B
+
+[Back to Notes Index](../README.md) | [Next: Section 2](../02-crud/README.md)

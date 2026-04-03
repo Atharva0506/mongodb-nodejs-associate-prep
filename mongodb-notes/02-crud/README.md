@@ -1,5 +1,7 @@
 # Section 2: CRUD (51%)
 
+[Home](../../README.md) | [Notes Index](../README.md) | [Previous: Section 1](../01-overview-document-model/README.md) | [Next: Section 3](../03-indexes/README.md)
+
 Official references:
 - https://www.mongodb.com/docs/manual/crud/
 - https://www.mongodb.com/docs/manual/reference/operator/query/
@@ -500,3 +502,5 @@ After pipeline `[{$group:...}, {$match:...}]`, the second stage evaluates:
 - C. Index metadata
 - D. Collection options
 Answer: B
+
+[Previous: Section 1](../01-overview-document-model/README.md) | [Back to Notes Index](../README.md) | [Next: Section 3](../03-indexes/README.md)

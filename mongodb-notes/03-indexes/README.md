@@ -1,5 +1,7 @@
 # Section 3: Indexes (17%)
 
+[Home](../../README.md) | [Notes Index](../README.md) | [Previous: Section 2](../02-crud/README.md) | [Next: Section 4](../04-data-modeling/README.md)
+
 Official references:
 - https://www.mongodb.com/docs/manual/indexes/
 - https://www.mongodb.com/docs/manual/reference/explain-results/
@@ -240,3 +242,5 @@ If a query only sorts by `product` then `price`, which index is directly aligned
 - C. `{ product: -1 }`
 - D. `{ price: -1 }`
 Answer: B
+
+[Previous: Section 2](../02-crud/README.md) | [Back to Notes Index](../README.md) | [Next: Section 4](../04-data-modeling/README.md)

@@ -1,5 +1,7 @@
 # Section 5: Tools and Tooling (2%)
 
+[Home](../../README.md) | [Notes Index](../README.md) | [Previous: Section 4](../04-data-modeling/README.md) | [Next: Section 6](../06-drivers-nodejs/README.md)
+
 Official references:
 - Atlas Data Explorer docs in MongoDB Atlas documentation
 
@@ -75,3 +77,5 @@ Which is a common syntax mistake in exam options?
 - C. Putting `$limit` inside filter object
 - D. Using Find view for simple query
 Answer: C
+
+[Previous: Section 4](../04-data-modeling/README.md) | [Back to Notes Index](../README.md) | [Next: Section 6](../06-drivers-nodejs/README.md)

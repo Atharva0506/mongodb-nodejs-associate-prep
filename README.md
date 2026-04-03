@@ -2,29 +2,36 @@
 
 Short, exam-focused notes and practice material for MongoDB Associate Developer (Node.js), aligned to the official MongoDB Associate Developer Exam Guide PDF included in this repository.
 
+## Quick Navigation
+- Start here: [Notes Index](mongodb-notes/README.md)
+- Official objective map: [Syllabus Summary](mongodb-notes/syllabus-summary.md)
+- Source question set: [Official Practice Questions](offical-question.md)
+- Official guide file in repo: [MongoDB Associate Developer Exam Guide PDF](MongodDBAssociateDeveloperExamGuide.docx3.pdf)
+
 ## Purpose
 - This repository is for educational and self-study use only.
 - It follows the official exam guide domains and objectives.
 
 ## What is inside
-- `mongodb-notes/syllabus-summary.md`: Official domain weights and objective map.
-- `mongodb-notes/01-overview-document-model/README.md`: Detailed notes + MCQs at end.
-- `mongodb-notes/02-crud/README.md`: Detailed notes + MCQs at end.
-- `mongodb-notes/03-indexes/README.md`: Detailed notes + MCQs at end.
-- `mongodb-notes/04-data-modeling/README.md`: Detailed notes + MCQs at end.
-- `mongodb-notes/05-tools-and-tooling/README.md`: Detailed notes + MCQs at end.
-- `mongodb-notes/06-drivers-nodejs/README.md`: Detailed notes + MCQs at end.
-- `offical-question.md`: Practice questions collected from the official MongoDB learning source.
-- `MongodDBAssociateDeveloperExamGuide.docx3.pdf`: Official exam guide provided by user.
+- [mongodb-notes/README.md](mongodb-notes/README.md): Central navigation page for all study sections.
+- [mongodb-notes/syllabus-summary.md](mongodb-notes/syllabus-summary.md): Official domain weights and objective map.
+- [mongodb-notes/01-overview-document-model/README.md](mongodb-notes/01-overview-document-model/README.md): Detailed notes + MCQs.
+- [mongodb-notes/02-crud/README.md](mongodb-notes/02-crud/README.md): Detailed notes + MCQs.
+- [mongodb-notes/03-indexes/README.md](mongodb-notes/03-indexes/README.md): Detailed notes + MCQs.
+- [mongodb-notes/04-data-modeling/README.md](mongodb-notes/04-data-modeling/README.md): Detailed notes + MCQs.
+- [mongodb-notes/05-tools-and-tooling/README.md](mongodb-notes/05-tools-and-tooling/README.md): Detailed notes + MCQs.
+- [mongodb-notes/06-drivers-nodejs/README.md](mongodb-notes/06-drivers-nodejs/README.md): Detailed notes + MCQs.
+- [offical-question.md](offical-question.md): Practice questions collected from official MongoDB learning source.
+- [MongodDBAssociateDeveloperExamGuide.docx3.pdf](MongodDBAssociateDeveloperExamGuide.docx3.pdf): Official exam guide provided by user.
 
 ## Scope Alignment
 - Updated to match the official guide sections only:
-- Section 1: MongoDB Overview and the Document Model
-- Section 2: CRUD
-- Section 3: Indexes
-- Section 4: Data Modeling
-- Section 5: Tools and Tooling
-- Section 6: Drivers (Node.js track)
+- Section 1: [MongoDB Overview and the Document Model](mongodb-notes/01-overview-document-model/README.md)
+- Section 2: [CRUD](mongodb-notes/02-crud/README.md)
+- Section 3: [Indexes](mongodb-notes/03-indexes/README.md)
+- Section 4: [Data Modeling](mongodb-notes/04-data-modeling/README.md)
+- Section 5: [Tools and Tooling](mongodb-notes/05-tools-and-tooling/README.md)
+- Section 6: [Drivers (Node.js track)](mongodb-notes/06-drivers-nodejs/README.md)
 - Out-of-scope topics were removed from notes to avoid syllabus drift.
 
 # Credits
