@@ -24,7 +24,7 @@ Short, exam-focused notes and practice material for MongoDB Associate Developer 
 - This repository is maintained for educational and exam-preparation purposes.
 - All product names and trademarks belong to their respective owners.
 
-See `CREDITS.md` for details.
+
 
 ## License
 - This project is licensed under the MIT License for original notes/content in this repository.
