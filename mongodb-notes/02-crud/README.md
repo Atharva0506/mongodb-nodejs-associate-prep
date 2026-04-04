@@ -8,50 +8,84 @@ Official references:
 - https://www.mongodb.com/docs/manual/aggregation/
 - https://www.mongodb.com/docs/atlas/atlas-search/
 
-This section carries the largest weight, so questions often combine syntax validation plus output reasoning.
+This is the highest-weight section. Most questions combine syntax correctness and output reasoning.
 
-## In-Depth Objective Guide
+## Optional setup data used by examples
+
+```javascript
+db.products.deleteMany({});
+db.products.insertMany([
+  { _id: 1, name: "XPhone", price: 799, color: ["white", "black"], storage: [64, 128, 256], status: "A" },
+  { _id: 2, name: "XPad", price: 899, color: ["white", "black", "purple"], storage: [128, 256, 512], status: "B" },
+  { _id: 3, name: "GPad", price: 699, color: ["white", "orange", "gold", "gray"], storage: [128, 256, 1024], status: "A" }
+]);
+```
+
+## Objective-by-objective guide
 
 ### 2.1 Insert command correctness
-What is tested:
-- Valid method name
-- Correct literal values and JSON-like structure
-- Understanding `_id` uniqueness
 
-Core command:
+Syntax:
+
 ```javascript
 db.files.insertOne({ file: "a.log", owner: "applicationA", size: 1024, deleted: true });
 ```
 
-Driver equivalent:
+Expected output:
+
 ```javascript
-await coll.insertOne({ file: "a.log", owner: "applicationA", size: 1024, deleted: true });
+{ acknowledged: true, insertedId: ObjectId("...") }
 ```
 
 ### 2.2 Replace-style update output
-What is tested:
-- Replace vs update-operator behavior
 
-`replaceOne` replaces the whole matched document content, except immutable `_id`.
+replaceOne replaces the entire matched document except immutable _id.
+
+Syntax:
 
 ```javascript
 db.coll.replaceOne({ _id: 1 }, { a: "ten", b: "five" });
 ```
 
-If original doc is `{ _id:1, a:"one", b:"four", c:"three" }`, after replace it becomes `{ _id:1, a:"ten", b:"five" }`.
+Expected output:
 
-### 2.3 `$set` update output
-What is tested:
-- Field-level update behavior
+```javascript
+{ acknowledged: true, matchedCount: 1, modifiedCount: 1, upsertedId: null }
+```
+
+If original document is:
+
+```javascript
+{ _id: 1, a: "one", b: "four", c: "three" }
+```
+
+After replaceOne:
+
+```javascript
+{ _id: 1, a: "ten", b: "five" }
+```
+
+### 2.3 $set update output
+
+Syntax:
 
 ```javascript
 db.coll.updateOne({ _id: 1 }, { $set: { b: 2 } });
 ```
 
-`$set` updates/adds only target path; unrelated fields remain.
+Expected output:
+
+```javascript
+{ acknowledged: true, matchedCount: 1, modifiedCount: 1, upsertedId: null }
+```
+
+Only field b changes. Other fields remain.
 
 ### 2.4 Upsert command selection
-Use `upsert: true` in options object.
+
+Correct key is upsert in options object (not $upsert).
+
+Syntax:
 
 ```javascript
 db.cakeFlavors.updateOne(
@@ -61,64 +95,133 @@ db.cakeFlavors.updateOne(
 );
 ```
 
-Common trap: `$upsert` is invalid.
-
-### 2.5 Multi-document update expression
-Use `updateMany` when requirement says all matching docs.
+Expected output when no document matches:
 
 ```javascript
-db.movie.updateMany({ year: { $lt: 2000 } }, { $set: { classic: true } });
+{
+  acknowledged: true,
+  matchedCount: 0,
+  modifiedCount: 0,
+  upsertedCount: 1,
+  upsertedId: ObjectId("...")
+}
+```
+
+### 2.5 Multi-document update expression
+
+Syntax:
+
+```javascript
+db.movies.updateMany(
+  { year: { $lt: 2000 } },
+  { $set: { classic: true } }
+);
+```
+
+Expected output:
+
+```javascript
+{ acknowledged: true, matchedCount: 12, modifiedCount: 12, upsertedId: null }
 ```
 
 ### 2.6 findAndModify concurrent scenario
-Single-document atomic methods:
-- `findOneAndUpdate`
-- `findOneAndDelete`
-- `findOneAndReplace`
+
+Use single-document atomic methods when you must update/delete and return one affected document.
+
+Syntax:
 
 ```javascript
 db.loans.findOneAndDelete({ book: "EFF", name: "T.B." });
 ```
 
-Exam pattern: choose API that both changes state and returns the affected document.
-
-### 2.7 Delete expression selection
-- Delete one: `deleteOne`
-- Delete all matches: `deleteMany`
+Expected output (deleted document):
 
 ```javascript
+{ _id: ObjectId("..."), book: "EFF", name: "T.B.", dueDate: ISODate("...") }
+```
+
+### 2.7 Delete expression selection
+
+Syntax:
+
+```javascript
+db.inventory.deleteOne({ status: "C" });
 db.inventory.deleteMany({ status: "C" });
 ```
 
+Expected output:
+
+```javascript
+{ acknowledged: true, deletedCount: 1 }
+{ acknowledged: true, deletedCount: 7 }
+```
+
 ### 2.8 Single-document equality lookup
-Use `findOne`.
+
+Syntax:
 
 ```javascript
 db.ratings.findOne({ hotel: "CCC" });
 ```
 
+Expected output:
+
+```javascript
+{ _id: ObjectId("..."), hotel: "CCC", stars: 4 }
+```
+
 ### 2.9 Array-field equality matching
-Equality on array field matches element membership.
+
+Equality on array field matches membership.
+
+Syntax:
 
 ```javascript
 db.products.find({ color: "purple" });
 ```
 
+Expected output (sample):
+
+```javascript
+{ _id: 2, name: "XPad", color: ["white", "black", "purple"], ... }
+```
+
 ### 2.10 Relational operators
-Use comparison operators directly on target field.
+
+Syntax:
 
 ```javascript
 db.products.find({ price: { $lte: 800 } });
 ```
 
-### 2.11 `$in` matching
+Expected output (sample):
 
 ```javascript
-db.users.find({ status: { $in: ["A", "B"] } });
+{ _id: 1, name: "XPhone", price: 799, ... }
+{ _id: 3, name: "GPad", price: 699, ... }
 ```
 
-### 2.12 `$elemMatch`
-Use to bind multiple conditions to the same array element.
+### 2.11 $in matching
+
+Syntax:
+
+```javascript
+db.products.find({ status: { $in: ["A", "B"] } });
+```
+
+Expected output:
+
+```javascript
+{ _id: 1, status: "A", ... }
+{ _id: 2, status: "B", ... }
+{ _id: 3, status: "A", ... }
+```
+
+### 2.12 $elemMatch
+
+Use $elemMatch when multiple conditions must be true on the same array element.
+
+Syntax:
 
 ```javascript
 db.orders.find({
@@ -126,7 +229,15 @@ db.orders.find({
 });
 ```
 
+Expected output:
+
+```javascript
+{ _id: ObjectId("..."), items: [{ sku: "ABC", qty: 2 }, { sku: "XYZ", qty: 1 }] }
+```
+
 ### 2.13 Logical operators
+
+Syntax:
 
 ```javascript
 db.products.find({
@@ -137,49 +248,82 @@ db.products.find({
 });
 ```
 
-Pattern tested: identify matched output documents from compound conditions.
+Expected output for sample data:
+
+```javascript
+{ _id: 3, name: "GPad", price: 699, storage: [128, 256, 1024], ... }
+```
 
 ### 2.14 Sort + limit output
+
+Syntax:
 
 ```javascript
 db.restaurants.find({}).sort({ rating: -1 }).limit(1);
 ```
 
-Output reasoning:
-- Sort descending first
-- Take first document after sort
+Expected behavior:
+- First sort all matches by rating descending.
+- Then return only the first document.
 
 ### 2.15 Incorrect projection detection
-Projection rule:
-- Include fields (`1`) OR exclude fields (`0`), not both.
-- Exception: `_id` can be excluded alongside include projections.
 
-Valid example:
+Rule:
+- Include (1) or exclude (0), not both.
+- _id can be excluded while including other fields.
+
+Syntax:
+
 ```javascript
 db.users.find({}, { name: 1, email: 1, _id: 0 });
 ```
 
+Expected output:
+
+```javascript
+{ name: "Ava", email: "ava@example.com" }
+{ name: "Noah", email: "noah@example.com" }
+```
+
 ### 2.16 Cursor materialization
+
+find returns a cursor. toArray materializes all matching documents.
+
+Syntax:
 
 ```javascript
 db.inventory.find({}).toArray();
 ```
 
-`find()` returns cursor; `toArray()` loads all results to memory.
+Expected output:
 
-### 2.17 Count matched docs
+```javascript
+[
+  { _id: 1, item: "pen" },
+  { _id: 2, item: "notebook" }
+]
+```
+
+### 2.17 Count matched documents
+
+Syntax:
 
 ```javascript
 db.orders.countDocuments({ status: "OPEN" });
 ```
 
-Exam distinction:
-- `countDocuments(filter)` for filtered count.
+Expected output:
 
-### 2.18 Search index definition
-Atlas Search index mappings are configured separately from regular `createIndex`.
+```javascript
+42
+```
 
-Autocomplete concept example:
+### 2.18 Search index definition (Atlas Search)
+
+Atlas Search indexes are configured in Atlas, not with db.collection.createIndex.
+
+Definition example:
+
 ```json
 {
   "mappings": {
@@ -193,8 +337,14 @@ Autocomplete concept example:
 }
 ```
 
+Expected result:
+- Atlas creates the Search index and eventually shows Ready status.
+
 ### 2.19 Search query selection
-`$search` text query uses `path` + `query`.
+
+Use path and query under $search.text.
+
+Syntax:
 
 ```javascript
 db.restaurants.aggregate([
@@ -209,7 +359,17 @@ db.restaurants.aggregate([
 ]);
 ```
 
-### 2.20 Aggregation output with `$match` and `$group`
+Expected output (sample):
+
+```javascript
+{ _id: 4, name: "Cubanos Inc.", active: false }
+```
+
+### 2.20 Aggregation output with $match and $group
+
+Stage order matters. If $match is after $group, it filters grouped results.
+
+Syntax:
 
 ```javascript
 db.scores.aggregate([
@@ -218,9 +378,17 @@ db.scores.aggregate([
 ]);
 ```
 
-If `$match` is after `$group`, it filters grouped results, not raw documents.
+Expected output (sample):
 
-### 2.21 Aggregation output with `$lookup`
+```javascript
+{ _id: "p1", score: 89 }
+{ _id: "p2", score: 75 }
+{ _id: "p6", score: 100 }
+```
+
+### 2.21 Aggregation output with $lookup
+
+Syntax:
 
 ```javascript
 db.orders.aggregate([
@@ -235,7 +403,21 @@ db.orders.aggregate([
 ]);
 ```
 
-### 2.22 Aggregation output with `$out`
+Expected output shape:
+
+```javascript
+{
+  _id: ObjectId("..."),
+  customerId: ObjectId("..."),
+  customer: [
+    { _id: ObjectId("..."), name: "Alex" }
+  ]
+}
+```
+
+### 2.22 Aggregation output with $out
+
+Syntax:
 
 ```javascript
 db.sales.aggregate([
@@ -244,263 +426,29 @@ db.sales.aggregate([
 ]);
 ```
 
-`$out` writes final pipeline output into target collection.
+Expected behavior:
+- Pipeline writes final documents into collection sales_paid.
+- The command itself does not return the written documents.
+
+Verify output collection:
+
+```javascript
+db.sales_paid.find();
+```
 
 ## High-yield exam checklist
-- One vs many method selection
-- Replace vs `$set`
-- Correct options object (`upsert: true`)
-- Array matching behavior (`$in`, `$elemMatch`, equality)
+- Method choice: one vs many
+- replaceOne vs updateOne with $set
+- Correct options key: upsert
+- Array queries: equality, $in, $elemMatch
 - Projection include/exclude rule
-- Cursor vs document APIs
+- Cursor APIs vs document APIs
 - Aggregation stage order reasoning
 
-## Common traps
-- Fake methods: `findMany`, `updateMulti`, `updateBulk`
-- Wrong upsert key: `$upsert`
-- Wrong Atlas Search keys: `field` instead of `path`
-- Misplacing `limit` in wrong query shape
-
-## MCQ Practice (Section 2)
-
-### Q2.1
-Valid insert command is:
-- A. `db.files.insertOne({ size: 1KB, deleted: True })`
-- B. `db.files.insertOne({ size: 1024, deleted: true })`
-- C. `db.files.addOne({ size: 1024, deleted: true })`
-- D. `db.files.insert({ size: 1024, deleted: True })`
-Answer: B
-
-### Q2.2
-`replaceOne` behavior is:
-- A. Only adds missing fields
-- B. Replaces full document except `_id`
-- C. Same as `$set`
-- D. Always inserts new `_id`
-Answer: B
-
-### Q2.3
-`$set` update does what?
-- A. Replaces whole doc
-- B. Updates specific fields only
-- C. Drops collection
-- D. Sorts documents
-Answer: B
-
-### Q2.4
-Correct upsert option syntax:
-- A. `{ $upsert: true }`
-- B. `{ upsert: true }`
-- C. `{ upserted: true }`
-- D. `{ setUpsert: true }`
-Answer: B
-
-### Q2.5
-To update all matching docs:
-- A. `updateOne`
-- B. `replaceOne`
-- C. `updateMany`
-- D. `updateBulk`
-Answer: C
-
-### Q2.6
-Delete one and return deleted document:
-- A. `deleteOne`
-- B. `deleteMany`
-- C. `findOneAndDelete`
-- D. `remove`
-Answer: C
-
-### Q2.7
-Remove all documents with status C:
-- A. `deleteOne({status:"C"})`
-- B. `deleteMany({status:"C"})`
-- C. `findOneAndDelete({status:"C"})`
-- D. `drop({status:"C"})`
-Answer: B
-
-### Q2.8
-Single equality lookup for one doc:
-- A. `findOne({x:3})`
-- B. `find({x:3}).toArray()`
-- C. `lookupOne({x:3})`
-- D. `searchOne({x:3})`
-Answer: A
-
-### Q2.9
-`{ tags: "red" }` can match `{ tags: ["red", "blue"] }`?
-- A. No
-- B. Yes
-- C. Only with text index
-- D. Only with `$elemMatch`
-Answer: B
-
-### Q2.10
-Which query matches `price <= 100`?
-- A. `{ price: { $gte: 100 } }`
-- B. `{ price: { $lte: 100 } }`
-- C. `{ price: { $eq: [100] } }`
-- D. `{ price: { $in: 100 } }`
-Answer: B
-
-### Q2.11
-Membership operator is:
-- A. `$nin`
-- B. `$exists`
-- C. `$in`
-- D. `$allMatch`
-Answer: C
-
-### Q2.12
-Operator for matching multiple conditions on one array element:
-- A. `$elemMatch`
-- B. `$in`
-- C. `$all`
-- D. `$slice`
-Answer: A
-
-### Q2.13
-Logically correct `$and` expression:
-- A. `{ $and: { a: 1, b: 2 } }`
-- B. `{ $and: [{ a: 1 }, { b: 2 }] }`
-- C. `{ and: [{ a: 1 }, { b: 2 }] }`
-- D. `{ $and: "a=1,b=2" }`
-Answer: B
-
-### Q2.14
-Top-rated document query pattern:
-- A. `.sort({rating:1}).limit(1)`
-- B. `.sort({rating:-1}).limit(1)`
-- C. `.limit(1).sort({rating:-1})` always equivalent in exam options
-- D. `.findOne().sort({rating:-1})`
-Answer: B
-
-### Q2.15
-Invalid projection pattern:
-- A. `{ name: 1, _id: 0 }`
-- B. `{ name: 0, email: 0 }`
-- C. `{ name: 1, email: 0 }`
-- D. `{ city: 1 }`
-Answer: C
-
-### Q2.16
-Get all cursor results:
-- A. `findAll()`
-- B. `find().toArray()`
-- C. `cursor.readAll()`
-- D. `findMany().all()`
-Answer: B
-
-### Q2.17
-Count API for matched documents:
-- A. `countDocuments(filter)`
-- B. `countAll(filter)`
-- C. `count(filter).total`
-- D. `size(filter)`
-Answer: A
-
-### Q2.18
-Autocomplete beginning-of-word tokenization:
-- A. `matchNGram`
-- B. `edgeGram`
-- C. `regexCaptureGroup`
-- D. `prefixOnly`
-Answer: B
-
-### Q2.19
-Atlas Search text keys:
-- A. `field`, `synonym`
-- B. `path`, `query`
-- C. `column`, `text`
-- D. `where`, `value`
-Answer: B
-
-### Q2.20
-After `$group`, `$match` filters:
-- A. Source docs
-- B. Grouped output docs
-- C. Index definitions
-- D. Collection metadata
-Answer: B
-
-### Q2.21
-Join-like aggregation stage:
-- A. `$join`
-- B. `$lookup`
-- C. `$relate`
-- D. `$pair`
-Answer: B
-
-### Q2.22
-Stage that writes aggregation output to collection:
-- A. `$out`
-- B. `$save`
-- C. `$write`
-- D. `$dump`
-Answer: A
-
-### Q2.23
-Which statement is true about `replaceOne`?
-- A. It merges fields like `$set`
-- B. It replaces full doc body except immutable `_id`
-- C. It updates all matched documents
-- D. It can change `_id` freely
-Answer: B
-
-### Q2.24
-Which API is best when requirement says "update if exists, insert if missing"?
-- A. `insertOne` with options
-- B. `updateOne` with `{ upsert: true }`
-- C. `replaceOne` only
-- D. `findOneAndDelete`
-Answer: B
-
-### Q2.25
-For array-of-objects query requiring same element to satisfy two conditions, use:
-- A. `$in`
-- B. `$and`
-- C. `$elemMatch`
-- D. `$exists`
-Answer: C
-
-### Q2.26
-Which is valid projection?
-- A. `{ name: 1, email: 0 }`
-- B. `{ name: 1, email: 1, _id: 0 }`
-- C. `{ name: 0, _id: 1, city: 1 }`
-- D. `{ name: true, email: false }` as mixed include/exclude projection semantics
-Answer: B
-
-### Q2.27
-`find()` returns:
-- A. Document
-- B. Cursor
-- C. Boolean
-- D. Write result
-Answer: B
-
-### Q2.28
-Which query shape is correct for top-rated one document?
-- A. `find().limit(1).sort({rating:-1})` as exam-best canonical choice
-- B. `find().sort({rating:-1}).limit(1)`
-- C. `findOne().sort({rating:-1})`
-- D. `aggregate([{ $sort: { rating: -1, limit: 1 } }])`
-Answer: B
-
-### Q2.29
-Atlas Search text operator requires which keys?
-- A. `field`, `synonym`
-- B. `path`, `query`
-- C. `column`, `term`
-- D. `search`, `value`
-Answer: B
-
-### Q2.30
-After pipeline `[{$group:...}, {$match:...}]`, the second stage evaluates:
-- A. Original source documents
-- B. Grouped documents
-- C. Index metadata
-- D. Collection options
-Answer: B
+## Common exam traps
+- Fake methods like findMany, updateMulti, updateBulk
+- Invalid option key $upsert
+- Using field instead of path in Atlas Search text query
+- Putting limit inside a filter document
 
 [Previous: Section 1](../01-overview-document-model/README.md) | [Back to Notes Index](../README.md) | [Next: Section 3](../03-indexes/README.md)

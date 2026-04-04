@@ -6,108 +6,101 @@ Official references:
 - https://www.mongodb.com/docs/manual/core/document/
 - https://www.mongodb.com/docs/manual/reference/bson-types/
 
+This section checks whether you understand MongoDB document structure, BSON types, and schema flexibility.
+
 ## Objective 1.1: Identify BSON value types MongoDB supports
 
-MongoDB stores data as BSON (Binary JSON), which extends JSON with extra types.
+MongoDB stores documents as BSON (Binary JSON). BSON extends JSON with MongoDB-specific types like ObjectId, Date, Decimal128, and different integer sizes.
 
-High-yield types for exam:
+Common BSON types tested in the exam:
 - String
 - Boolean
-- 32-bit integer (Int32)
-- 64-bit integer (Int64)
+- Int32
+- Int64
 - Double
 - Decimal128
 - Date
 - ObjectId
 - Array
-- Embedded document (object)
+- Embedded document
 - Null
 
-Practical rules:
-- Use valid JavaScript literals in mongosh.
-- `true` and `false` are valid; `True` and `False` are invalid.
-- `1KB` is invalid syntax; use numeric bytes like `1024`.
+### Syntax example
 
-Example:
 ```javascript
 db.files.insertOne({
-	file: "a.log",
-	owner: "applicationA",
-	size: 1024,
-	deleted: true,
-	createdAt: new Date()
+  file: "a.log",
+  owner: "applicationA",
+  sizeBytes: Int32(1024),
+  checksum: NumberLong("922337203685477580"),
+  deleted: true,
+  tags: ["audit", "ops"],
+  metadata: { region: "us-east-1" },
+  price: NumberDecimal("19.99"),
+  createdAt: new Date(),
+  optionalNote: null
 });
 ```
 
+### Expected output (mongosh)
+
+```javascript
+{ acknowledged: true, insertedId: ObjectId("...") }
+```
+
+Notes:
+- Use lowercase boolean literals: true and false.
+- 1KB is not valid syntax. Use 1024.
+- If you omit _id, MongoDB auto-generates an ObjectId.
+
 ## Objective 1.2: Identify which document shapes can co-exist in one collection
 
-MongoDB is schema-flexible by default:
-- Different documents in the same collection can have different fields.
-- Field types can differ across documents.
+MongoDB collections are schema-flexible by default. Documents in the same collection can have different fields and field types.
 
-Always enforced:
-- Every document has an `_id`.
-- `_id` must be unique in the collection.
+Hard rule that is always enforced:
+- Every document has _id.
+- _id must be unique inside that collection.
 
-Examples:
+### Syntax example
+
 ```javascript
-db.items.insertOne({ _id: 1, name: "X", tags: ["new"] });
-db.items.insertOne({ _id: 2, sku: 9001, specs: { color: "black" } });
+db.items.insertMany([
+  { _id: 1, name: "XPhone", price: 799, specs: { color: "black" } },
+  { _id: 2, sku: "A-100", inStock: true, tags: ["sale"] },
+  { _id: 3, name: "Bundle", products: [{ sku: "A-100", qty: 2 }] }
+]);
+```
+
+### Expected output (mongosh)
+
+```javascript
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': 1,
+    '1': 2,
+    '2': 3
+  }
+}
+```
+
+### Query to verify mixed document shapes
+
+```javascript
+db.items.find({}, { _id: 1, name: 1, sku: 1, specs: 1 }).sort({ _id: 1 });
+```
+
+### Expected output (sample)
+
+```javascript
+{ _id: 1, name: "XPhone", specs: { color: "black" } }
+{ _id: 2, sku: "A-100" }
+{ _id: 3, name: "Bundle" }
 ```
 
 ## Common exam traps
-- Assuming all documents must share exactly one schema.
-- Ignoring duplicate `_id` conflicts.
-- Confusing BSON names with generic language type labels.
-
-## MCQ Practice (Section 1)
-
-### Q1
-Which BSON numeric type is explicitly valid in MongoDB terminology?
-- A. Number
-- B. BIGINT
-- C. 32-bit integer
-- D. NumericType
-Answer: C
-
-### Q2
-Which statement is true for one collection?
-- A. All documents must have identical fields.
-- B. Documents can differ in shape, but `_id` must remain unique.
-- C. Arrays are not allowed.
-- D. Embedded documents are not allowed.
-Answer: B
-
-### Q3
-What happens if `_id` is omitted in `insertOne`?
-- A. Insert fails always.
-- B. MongoDB auto-generates `_id`.
-- C. `_id` becomes 0.
-- D. `_id` is added only after update.
-Answer: B
-
-### Q4
-Which mongosh literal is valid for a boolean?
-- A. TRUE
-- B. True
-- C. true
-- D. t
-Answer: C
-
-### Q5
-Which insert command is syntactically valid?
-- A. `db.files.insertOne({ size: 1KB, deleted: True })`
-- B. `db.files.insertOne({ size: 1024, deleted: true })`
-- C. `db.files.addOne({ size: 1024, deleted: true })`
-- D. `db.files.insert({ size: 1024, deleted: True })`
-Answer: B
-
-### Q6
-Two documents have different fields but unique `_id`. Can both be inserted?
-- A. No, because schemas differ.
-- B. Yes, schema flexibility allows this.
-- C. No, unless validation is disabled globally.
-- D. Only in Atlas, not in self-managed MongoDB.
-Answer: B
+- Choosing invalid BSON names from fake options (for example BIGINT as written text).
+- Assuming one collection must have one rigid schema.
+- Forgetting that duplicate _id causes write failure even when other fields are valid.
 
 [Back to Notes Index](../README.md) | [Next: Section 2](../02-crud/README.md)

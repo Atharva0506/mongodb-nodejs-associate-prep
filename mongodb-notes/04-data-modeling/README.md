@@ -4,99 +4,118 @@
 
 Official references:
 - https://www.mongodb.com/docs/manual/data-modeling/
+- https://www.mongodb.com/docs/manual/core/data-model-design/
 
-## Objective 4.1: Parent/children embed vs link decisions
+This section is about choosing a model that matches read/write patterns, not about memorizing one universal rule.
 
-Choose data model based on access pattern and growth pattern.
+## Objective 4.1: Parent/child embed vs link decisions
 
 Use embedding when:
-- Child data is bounded
-- Parent and child are read together frequently
-- You want single-document reads/updates
+- Child data is bounded.
+- Parent and child are read together most of the time.
+- You want single-document atomic updates.
 
-Use linking (references) when:
-- Child data can grow unbounded
-- Child has independent lifecycle/query patterns
-- Duplicating child data would be expensive
+Use references (linking) when:
+- Child data can grow unbounded.
+- Child has independent lifecycle and query paths.
+- Duplicating child data would be expensive.
 
-Embedded example:
+### Embedded model example
+
 ```javascript
-{
-	_id: 1,
-	product: "XPhone",
-	inventory: { available: 25, warehouse: "W1" }
-}
+db.products.insertOne({
+  _id: 1,
+  name: "XPhone",
+  inventory: { available: 25, warehouse: "W1" }
+});
 ```
 
-Referenced example:
+Read syntax:
+
+```javascript
+db.products.findOne({ _id: 1 });
+```
+
+Expected output:
+
+```javascript
+{ _id: 1, name: "XPhone", inventory: { available: 25, warehouse: "W1" } }
+```
+
+### Referenced model example
+
+```javascript
+db.orders.insertOne({
+  _id: 9001,
+  orderNo: "O-1001",
+  customerId: ObjectId("64f0c8e0d5d1cf9f0c000001")
+});
+```
+
+Join-style read syntax (aggregation lookup):
+
+```javascript
+db.orders.aggregate([
+  {
+    $lookup: {
+      from: "customers",
+      localField: "customerId",
+      foreignField: "_id",
+      as: "customer"
+    }
+  }
+]);
+```
+
+Expected output shape:
+
 ```javascript
 {
-	_id: 9001,
-	orderNo: "O-1001",
-	customerId: ObjectId("64f...")
+  _id: 9001,
+  orderNo: "O-1001",
+  customerId: ObjectId("64f0c8e0d5d1cf9f0c000001"),
+  customer: [{ _id: ObjectId("64f0c8e0d5d1cf9f0c000001"), name: "Ava" }]
 }
 ```
 
 ## Objective 4.2: Identify anti-pattern data models
 
 Common anti-patterns:
-- Unbounded arrays inside frequently updated documents
-- Model requiring many lookups for a simple common read
-- Document growth pattern that causes heavy rewrites
+- Unbounded arrays in frequently updated documents.
+- Excessive references for a very common simple read.
+- Large document growth that repeatedly rewrites documents.
 
-Exam reasoning method:
-- Identify the most common read path in the prompt
-- Check whether related data is bounded or unbounded
-- Prefer model that minimizes frequent high-cost operations
+### Anti-pattern example (unbounded array)
 
-## MCQ Practice (Section 4)
+```javascript
+{
+  _id: 1,
+  user: "u1",
+  activityLog: [ /* grows forever */ ]
+}
+```
 
-### Q4.1
-Embedding is usually best when:
-- A. Data is unbounded and independently queried
-- B. Related data is bounded and read with parent
-- C. Parent and child are unrelated
-- D. Child docs are extremely large and rarely used
-Answer: B
+Why this is risky:
+- Frequent updates to a very large parent document.
+- Worse write performance as document grows.
 
-### Q4.2
-Referencing is generally better when:
-- A. Child data is small and fixed
-- B. Child data is unbounded and independently accessed
-- C. Single-document reads are required most of the time
-- D. No relationship exists between entities
-Answer: B
+Better pattern:
 
-### Q4.3
-Which is a common data model anti-pattern?
-- A. Small embedded profile object
-- B. Unbounded activity log array in a hot document
-- C. Using ObjectId references
-- D. Compound indexing frequent query fields
-Answer: B
+```javascript
+db.activity.insertOne({ userId: 1, action: "login", at: new Date() });
+db.activity.createIndex({ userId: 1, at: -1 });
+```
 
-### Q4.4
-Primary factor for embed vs link choice:
-- A. Field name alphabetic order
-- B. Access and update patterns
-- C. Driver version only
-- D. Number of databases in cluster
-Answer: B
+Expected output from insertOne:
 
-### Q4.5
-If users always read parent + child together and child is bounded, prefer:
-- A. Link only
-- B. Embed
-- C. Separate shard key first
-- D. Text index only
-Answer: B
+```javascript
+{ acknowledged: true, insertedId: ObjectId("...") }
+```
 
-### Q4.6
-Which model often increases read complexity unnecessarily?
-- A. Embedding tiny, frequently co-read data
-- B. Referencing every small child even for simple common reads
-- C. Keeping `_id` unique
-- D. Using findOne for key lookups
-Answer: B
+## Exam decision checklist
+1. Find the most common access pattern in the prompt.
+2. Check if child cardinality is bounded or unbounded.
+3. Prefer the model that reduces frequent high-cost reads/writes.
+4. Use embedding for co-read bounded data; use references for independent/unbounded data.
 
 [Previous: Section 3](../03-indexes/README.md) | [Back to Notes Index](../README.md) | [Next: Section 5](../05-tools-and-tooling/README.md)
