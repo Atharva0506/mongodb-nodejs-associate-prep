@@ -59,4 +59,7 @@ Expected output (sample):
 - Using Find UI when prompt explicitly asks for aggregation pipeline stages.
 - Using invalid JSON-like syntax in Atlas filter bar.
 
+Detailed MCQ practice for this section: [All-Sections Detailed MCQ Bank](../all-sections-detailed-mcq-bank.md#section-5-tools-and-tooling)
+Pattern analysis of official options: [Question Pattern Analysis](../question-pattern-analysis.md)
+
 [Previous: Section 4](../04-data-modeling/README.md) | [Back to Notes Index](../README.md) | [Next: Section 6](../06-drivers-nodejs/README.md)

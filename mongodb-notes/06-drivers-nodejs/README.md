@@ -208,4 +208,7 @@ try {
 }
 ```
 
+Detailed MCQ practice for this section: [All-Sections Detailed MCQ Bank](../all-sections-detailed-mcq-bank.md#section-6-drivers-nodejs)
+Pattern analysis of official options: [Question Pattern Analysis](../question-pattern-analysis.md)
+
 [Previous: Section 5](../05-tools-and-tooling/README.md) | [Back to Notes Index](../README.md)

@@ -4,6 +4,8 @@ Use this page to move quickly across exam sections while reading on GitHub.
 
 ## Start Here
 - [Syllabus Summary](syllabus-summary.md)
+- [Question Pattern Analysis](question-pattern-analysis.md)
+- [All-Sections Detailed MCQ Bank](all-sections-detailed-mcq-bank.md)
 
 ## Official Sections
 - [Section 1: MongoDB Overview and the Document Model (8%)](01-overview-document-model/README.md)

@@ -451,4 +451,7 @@ db.sales_paid.find();
 - Using field instead of path in Atlas Search text query
 - Putting limit inside a filter document
 
+Detailed MCQ practice for this section: [All-Sections Detailed MCQ Bank](../all-sections-detailed-mcq-bank.md#section-2-crud)
+Pattern analysis of official options: [Question Pattern Analysis](../question-pattern-analysis.md)
+
 [Previous: Section 1](../01-overview-document-model/README.md) | [Back to Notes Index](../README.md) | [Next: Section 3](../03-indexes/README.md)

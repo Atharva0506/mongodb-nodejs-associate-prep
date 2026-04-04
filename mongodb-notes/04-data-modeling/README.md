@@ -118,4 +118,7 @@ Expected output from insertOne:
 3. Prefer the model that reduces frequent high-cost reads/writes.
 4. Use embedding for co-read bounded data; use references for independent/unbounded data.
 
+Detailed MCQ practice for this section: [All-Sections Detailed MCQ Bank](../all-sections-detailed-mcq-bank.md#section-4-data-modeling)
+Pattern analysis of official options: [Question Pattern Analysis](../question-pattern-analysis.md)
+
 [Previous: Section 3](../03-indexes/README.md) | [Back to Notes Index](../README.md) | [Next: Section 5](../05-tools-and-tooling/README.md)

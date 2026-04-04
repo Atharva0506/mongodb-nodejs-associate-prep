@@ -103,4 +103,7 @@ db.items.find({}, { _id: 1, name: 1, sku: 1, specs: 1 }).sort({ _id: 1 });
 - Assuming one collection must have one rigid schema.
 - Forgetting that duplicate _id causes write failure even when other fields are valid.
 
+Detailed MCQ practice for this section: [All-Sections Detailed MCQ Bank](../all-sections-detailed-mcq-bank.md#section-1-mongodb-overview-and-document-model)
+Pattern analysis of official options: [Question Pattern Analysis](../question-pattern-analysis.md)
+
 [Back to Notes Index](../README.md) | [Next: Section 2](../02-crud/README.md)
