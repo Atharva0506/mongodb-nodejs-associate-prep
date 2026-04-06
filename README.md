@@ -1,5 +1,10 @@
 # MongoDB Node.js Associate Prep
 
+**🎉 I have successfully passed the MongoDB Associate Developer (Node.js) Exam!**
+- **My Experience & Guide**: [Read my blog post here](https://atharvanaik.me/posts/mongodb-associate-developer-nodejs)
+- **Exam Score Report**: [View my results](https://sei.caveon.com/score/WyJmN2Y3NTk2ZC00ZTE0LTQzNjYtOTM1YS1mMmY5Yzg1NDc4NjgiLHRydWVd.If_F9OJu5D_6vcpEQmjSBgz3bfI)
+- **Official Credly Certificate**: [View badge](https://www.credly.com/badges/7c205345-273b-457d-b526-86d13fcf4aba/print)
+
 Short, exam-focused notes and practice material for MongoDB Associate Developer (Node.js), aligned to the official MongoDB Associate Developer Exam Guide PDF included in this repository.
 
 ## Quick Navigation
